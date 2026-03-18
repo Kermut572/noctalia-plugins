@@ -16,21 +16,17 @@
       "notifications": "Notifications"
     },
     "other-devices": "Other Devices",
-    "send-file-picker": "Pick file to send to device",
+    "send-file-picker": "Pick a file to send to device",
     "send-file": "Send File",
     "browse-device": "Browse Device Files",
-    "find-device": "Find my Device",
+    "find-device": "Find My Device",
     "pair": "Pair with Device",
     "unpair": "Unpair Device",
-    "valent-connect-error": {
-      "no-devices": "No device running Valent found",
-      "unavailable-title": "Valent does not seem to be running!",
-      "unavailable-desc": "Make sure you've installed the Valent Application on your system and that it has started the service",
+    "kdeconnect-error": {
+      "no-devices": "No devices found. Make sure your phone is on the same network and has KDE Connect open.",
+      "unavailable-title": "Valent is not running",
+      "unavailable-desc": "Make sure the Valent application is installed and running on your system.",
       "device-unavailable": "Device is currently unavailable"
-    },
-    "qdbus-error": {
-      "unavailable-title": "qdbus cannot be found!",
-      "unavailable-desc": "Make sure qdbus (or qdbus6 on some systems) is installed on your system"
     }
   },
   "bar": {
@@ -41,7 +37,7 @@
     "state": {
       "connected": "Connected",
       "disconnected": "Disconnected",
-      "unavailable": "Unavailable",
+      "unavailable": "Valent unavailable",
       "no-device": "No device",
       "not-paired": "Not paired"
     }

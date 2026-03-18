@@ -4,33 +4,25 @@ import QtQuick.Layouts
 import qs.Commons
 import qs.Services.UI
 import qs.Widgets
-import "./Services"
 import Quickshell
 
-// Panel Component
 Item {
   id: root
 
-  // Plugin API (injected by PluginPanelSlot)
   property var pluginApi: null
 
-  // SmartPanel
   readonly property var geometryPlaceholder: panelContainer
 
-  property real contentPreferredWidth: 440 * Style.uiScaleRatio
+  property real contentPreferredWidth:  440 * Style.uiScaleRatio
   property real contentPreferredHeight: 360 * Style.uiScaleRatio * Settings.data.ui.fontDefaultScale
 
   readonly property bool allowAttach: true
 
   property bool deviceSwitcherOpen: false
 
-  anchors.fill: parent
+  readonly property var main: pluginApi?.mainInstance ?? ({})
 
-  Component.onCompleted: {
-    if (pluginApi) {
-      Logger.i("Valent", "Panel initialized");
-    }
-  }
+  anchors.fill: parent
 
   Rectangle {
     id: panelContainer
@@ -41,8 +33,8 @@ Item {
       id: deviceData
 
       function getBatteryIcon(percentage, isCharging) {
-        if (isCharging) return "battery-charging"
-        if (percentage < 5) return "battery"
+        if (isCharging)      return "battery-charging"
+        if (percentage <  5) return "battery"
         if (percentage < 25) return "battery-1"
         if (percentage < 50) return "battery-2"
         if (percentage < 75) return "battery-3"
@@ -51,75 +43,50 @@ Item {
 
       function getCellularTypeIcon(type) {
         switch (type) {
-          case "5G":
-            return "signal-5g"
-          case "LTE":
-            return "signal-4g"
-          case "HSPA":
-            return "signal-h"
-          case "UMTS":
-            return "signal-3g"
-          case "EDGE":
-            return "signal-e"
-          case "GPRS":
-            return "signal-g"
-          case "GSM":
-            return "signal-2g"
+          case "5G":       return "signal-5g"
+          case "LTE":      return "signal-4g"
+          case "HSPA":     return "signal-h"
+          case "UMTS":     return "signal-3g"
+          case "EDGE":     return "signal-e"
+          case "GPRS":     return "signal-g"
+          case "GSM":      return "signal-2g"
           case "CDMA":
-            return "signal-3g"
-          case "CDMA2000":
-            return "signal-3g"
-          case "iDEN":
-            return "signal-2g"
-          default:
-            return "wave-square"
+          case "CDMA2000": return "signal-3g"
+          case "iDEN":     return "signal-2g"
+          default:         return "wave-square"
         }
       }
 
       function getCellularStrengthIcon(strength) {
         switch (strength) {
-          case 0:
-            return "antenna-bars-1"
-          case 1:
-            return "antenna-bars-2"
-          case 2:
-            return "antenna-bars-3"
-          case 3:
-            return "antenna-bars-4"
-          case 4:
-            return "antenna-bars-5"
-          default:
-            return "antenna-bars-off"
+          case 0:  return "antenna-bars-1"
+          case 1:  return "antenna-bars-2"
+          case 2:  return "antenna-bars-3"
+          case 3:  return "antenna-bars-4"
+          case 4:  return "antenna-bars-5"
+          default: return "antenna-bars-off"
         }
       }
 
       function getSignalStrengthText(strength) {
         switch (strength) {
-          case 0:
-            return pluginApi?.tr("panel.signal.very-weak")
-          case 1:
-            return pluginApi?.tr("panel.signal.weak")
-          case 2:
-            return pluginApi?.tr("panel.signal.fair")
-          case 3:
-            return pluginApi?.tr("panel.signal.good")
-          case 4:
-            return pluginApi?.tr("panel.signal.excellent")
-          default:
-            return pluginApi?.tr("panel.signal.unknown")
+          case 0:  return pluginApi?.tr("panel.signal.very-weak")
+          case 1:  return pluginApi?.tr("panel.signal.weak")
+          case 2:  return pluginApi?.tr("panel.signal.fair")
+          case 3:  return pluginApi?.tr("panel.signal.good")
+          case 4:  return pluginApi?.tr("panel.signal.excellent")
+          default: return pluginApi?.tr("panel.signal.unknown")
         }
       }
 
-      anchors {
-        fill: parent
-        margins: Style.marginL
-      }
+      anchors { fill: parent; margins: Style.marginL }
       spacing: Style.marginL
 
+      // ── Header ───────────────────────────────────────────────────────────────
       NBox {
         id: headerBox
         Layout.fillWidth: true
-        implicitHeight: headerRow.implicitHeight + (Style.marginXL)
+        implicitHeight: headerRow.implicitHeight + Style.marginXL
 
         RowLayout {
           id: headerRow
@@ -141,20 +108,16 @@ Item {
           }
 
           NIconButton {
-            readonly property bool multipleDevices: Valent.devices.length > 1
+            readonly property bool multipleDevices: (main.devices?.length ?? 0) > 1
             icon: "swipe"
             tooltipText: multipleDevices ? pluginApi?.tr("panel.other-devices") : ""
             baseSize: Style.baseWidgetSize * 0.8
-            onClicked: {
-              deviceSwitcherOpen = !deviceSwitcherOpen
-            }
-            enabled: Valent.daemonAvailable && multipleDevices
+            onClicked: deviceSwitcherOpen = !deviceSwitcherOpen
+            enabled: (main.daemonAvailable ?? false) && multipleDevices
             opacity: multipleDevices ? 1.0 : 0.0
           }
 
-          Item {
-            Layout.fillWidth: true
-          }
+          Item { Layout.fillWidth: true }
 
           NIconButton {
             icon: "close"
@@ -162,53 +125,54 @@ Item {
             baseSize: Style.baseWidgetSize * 0.8
             onClicked: {
               if (pluginApi)
-                pluginApi.withCurrentScreen(s => pluginApi.closePanel(s));
+                pluginApi.withCurrentScreen(s => pluginApi.closePanel(s))
             }
           }
         }
       }
 
+      // ── Content loader ───────────────────────────────────────────────────────
       Loader {
         Layout.fillWidth: true
         Layout.fillHeight: true
         active: true
-        sourceComponent:  (Valent.qdbusCmd === null || Valent.qdbusCmd === "")         ? qdbusNotFoundCard                :
-                          (!Valent.daemonAvailable)                                        ? valentDaemonNotRunningCard   :
-                          (deviceSwitcherOpen)                                                 ? deviceSwitcherCard               :
-                          (Valent.mainDevice !== null && !Valent.mainDevice.reachable) ? deviceNotReachableCard           :
-                          (Valent.mainDevice !== null &&  Valent.mainDevice.paired)    ? deviceConnectedCard              :
-                          (Valent.mainDevice !== null && !Valent.mainDevice.paired)    ? noDevicePairedCard               :
-                          (Valent.devices.length === 0)                                    ? noDevicesAvailableCard           :
-                          null
+        sourceComponent: {
+          var m = main
+          if (!m.daemonAvailable)                                       return daemonNotRunningCard
+          if (deviceSwitcherOpen)                                        return deviceSwitcherCard
+          if (m.mainDevice !== null && m.mainDevice !== undefined) {
+            if (!m.mainDevice.isReachable)                               return deviceNotReachableCard
+            if ( m.mainDevice.isPaired)                                  return deviceConnectedCard
+            if (!m.mainDevice.isPaired)                                  return noDevicePairedCard
+          }
+          if (!m.devices || m.devices.length === 0)                      return noDevicesAvailableCard
+          return null
+        }
       }
 
+      // ── CARD: connected ──────────────────────────────────────────────────────
       Component {
         id: deviceConnectedCard
 
         Rectangle {
-          Layout.fillWidth: true
           color: Color.mSurfaceVariant
           radius: Style.radiusM
 
           Component.onCompleted: {
-            root.contentPreferredHeight = headerBox.height + contentLayout.implicitHeight + (Style.marginL * 8)
+            root.contentPreferredHeight = headerBox.height + contentLayout.implicitHeight + Style.marginL * 8
           }
-
           Component.onDestruction: {
             root.contentPreferredHeight = 360 * Style.uiScaleRatio * Settings.data.ui.fontDefaultScale
           }
 
           ColumnLayout {
             id: contentLayout
-            anchors {
-              fill: parent
-              margins: Style.marginL
-            }
+            anchors { fill: parent; margins: Style.marginL }
             spacing: Style.marginL
 
             RowLayout {
               NText {
-                text: Valent.mainDevice.name
+                text: main.mainDevice?.name ?? ""
                 pointSize: Style.fontSizeXXL
                 font.weight: Style.fontWeightBold
                 color: Color.mOnSurface
@@ -224,7 +188,7 @@ Item {
                 onAccepted: paths => {
                   if (paths.length > 0) {
                     for (const path of paths) {
-                      Valent.shareFile(Valent.mainDevice.id, path)
+                      main.shareFile(main.mainDevice.id, path)
                     }
                   }
                 }
@@ -233,40 +197,32 @@ Item {
               NIconButton {
                 icon: "device-mobile-search"
                 tooltipText: pluginApi?.tr("panel.browse-device")
-                onClicked: {
-                  Valent.browseFiles(Valent.mainDevice.id)
-                }
+                onClicked: main.browseFiles(main.mainDevice.id)
               }
 
               NIconButton {
                 icon: "device-mobile-share"
                 tooltipText: pluginApi?.tr("panel.send-file")
-                onClicked: {
-                  shareFilePicker.open()
-                }
+                onClicked: shareFilePicker.open()
               }
 
               NIconButton {
                 icon: "radar"
                 tooltipText: pluginApi?.tr("panel.find-device")
-                onClicked: {
-                  Valent.triggerFindMyPhone(Valent.mainDevice.id)
-                }
+                onClicked: main.triggerFindMyPhone(main.mainDevice.id)
               }
             }
 
-            // Device Status
             Loader {
               Layout.fillWidth: true
               Layout.fillHeight: true
-              active: Valent.mainDevice !== null
-              sourceComponent: deviceStatsWithPhone
+              active: main.mainDevice !== null && main.mainDevice !== undefined
+              sourceComponent: deviceStatsComponent
             }
-
           }
 
           Component {
-            id: deviceStatsWithPhone
+            id: deviceStatsComponent
 
             RowLayout {
               spacing: Style.marginM
@@ -283,163 +239,105 @@ Item {
                 }
               }
 
-              Item {
-                width: Style.marginL
-              }
+              Item { width: Style.marginL }
 
-              // Stats Grid
               GridLayout {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignTop
                 columns: 1
                 rowSpacing: Style.marginL
 
-                // Battery Section
+                // Battery
                 RowLayout {
                   spacing: Style.marginM
-
                   NIcon {
-                    icon: deviceData.getBatteryIcon(Valent.mainDevice.battery, Valent.mainDevice.charging)
-                    pointSize: Style.fontSizeXXXL
-                    applyUiScale: true
-                    color: Color.mOnSurface
+                    icon: deviceData.getBatteryIcon(main.mainDevice?.batteryCharge ?? -1, main.mainDevice?.batteryCharging ?? false)
+                    pointSize: Style.fontSizeXXXL; applyUiScale: true; color: Color.mOnSurface
                   }
-
                   ColumnLayout {
                     spacing: 2 * Style.uiScaleRatio
-
+                    NText { text: pluginApi?.tr("panel.card.battery"); pointSize: Style.fontSizeS; color: Color.mOnSurface }
                     NText {
-                      text: pluginApi?.tr("panel.card.battery")
-                      pointSize: Style.fontSizeS
-                      color: Color.mOnSurface
-                    }
-
-                    NText {
-                      text: Valent.mainDevice.battery + "%"
-                      pointSize: Style.fontSizeL
-                      font.weight: Style.fontWeightMedium
-                      color: Color.mOnSurface
+                      text: (main.mainDevice?.batteryCharge ?? -1) !== -1 ? (main.mainDevice.batteryCharge + "%") : pluginApi?.tr("panel.signal.unknown")
+                      pointSize: Style.fontSizeL; font.weight: Style.fontWeightMedium; color: Color.mOnSurface
                     }
                   }
                 }
 
-                // Network Type Section
+                // Network type
                 RowLayout {
                   spacing: Style.marginM
-
                   NIcon {
-                    icon: deviceData.getCellularTypeIcon(Valent.mainDevice.cellularNetworkType)
-                    pointSize: Style.fontSizeXXXL
-                    applyUiScale: true
-                    color: Color.mOnSurface
+                    icon: deviceData.getCellularTypeIcon(main.mainDevice?.networkType ?? "")
+                    pointSize: Style.fontSizeXXXL; applyUiScale: true; color: Color.mOnSurface
                   }
-
                   ColumnLayout {
                     spacing: 2 * Style.uiScaleRatio
-
+                    NText { text: pluginApi?.tr("panel.card.network"); pointSize: Style.fontSizeS; color: Color.mOnSurface }
                     NText {
-                      text: pluginApi?.tr("panel.card.network")
-                      pointSize: Style.fontSizeS
-                      color: Color.mOnSurface
-                    }
-
-                    NText {
-                      text: Valent.mainDevice.cellularNetworkType || pluginApi?.tr("panel.signal.unknown")
-                      pointSize: Style.fontSizeL
-                      font.weight: Style.fontWeightMedium
-                      color: Color.mOnSurface
+                      text: main.mainDevice?.networkType || pluginApi?.tr("panel.signal.unknown")
+                      pointSize: Style.fontSizeL; font.weight: Style.fontWeightMedium; color: Color.mOnSurface
                     }
                   }
                 }
 
-                // Signal Strength Section
+                // Signal strength
                 RowLayout {
                   spacing: Style.marginM
-
                   NIcon {
-                    icon: deviceData.getCellularStrengthIcon(Valent.mainDevice.cellularNetworkStrength)
-                    pointSize: Style.fontSizeXXXL
-                    applyUiScale: true
-                    color: Color.mOnSurface
+                    icon: deviceData.getCellularStrengthIcon(main.mainDevice?.networkStrength ?? -1)
+                    pointSize: Style.fontSizeXXXL; applyUiScale: true; color: Color.mOnSurface
                   }
-
                   ColumnLayout {
                     spacing: 2 * Style.uiScaleRatio
-
+                    NText { text: pluginApi?.tr("panel.card.signal-strength"); pointSize: Style.fontSizeS; color: Color.mOnSurface }
                     NText {
-                      text: pluginApi?.tr("panel.card.signal-strength")
-                      pointSize: Style.fontSizeS
-                      color: Color.mOnSurface
-                    }
-
-                    NText {
-                      text: deviceData.getSignalStrengthText(Valent.mainDevice.cellularNetworkStrength)
-                      pointSize: Style.fontSizeL
-                      font.weight: Style.fontWeightMedium
-                      color: Color.mOnSurface
+                      text: deviceData.getSignalStrengthText(main.mainDevice?.networkStrength ?? -1)
+                      pointSize: Style.fontSizeL; font.weight: Style.fontWeightMedium; color: Color.mOnSurface
                     }
                   }
                 }
 
-                // Notifications Section
+                // Notifications
                 RowLayout {
                   spacing: Style.marginM
-
                   NIcon {
                     icon: "notification"
-                    pointSize: Style.fontSizeXXXL
-                    applyUiScale: true
-                    color: Color.mOnSurface
+                    pointSize: Style.fontSizeXXXL; applyUiScale: true; color: Color.mOnSurface
                   }
-
                   ColumnLayout {
                     spacing: 2 * Style.uiScaleRatio
-
+                    NText { text: pluginApi?.tr("panel.card.notifications"); pointSize: Style.fontSizeS; color: Color.mOnSurface }
                     NText {
-                      text: pluginApi?.tr("panel.card.notifications")
-                      pointSize: Style.fontSizeS
-                      color: Color.mOnSurface
-                    }
-
-                    NText {
-                      text: Valent.mainDevice.notificationIds.length
-                      pointSize: Style.fontSizeL
-                      font.weight: Style.fontWeightMedium
-                      color: Color.mOnSurface
+                      text: main.mainDevice?.notificationIds?.length ?? 0
+                      pointSize: Style.fontSizeL; font.weight: Style.fontWeightMedium; color: Color.mOnSurface
                     }
                   }
                 }
-
               }
             }
           }
         }
       }
 
+      // ── CARD: not paired ─────────────────────────────────────────────────────
       Component {
         id: noDevicePairedCard
 
         Rectangle {
-          Layout.fillWidth: true
-          Layout.fillHeight: true
           color: Color.mSurfaceVariant
           radius: Style.radiusM
 
           ColumnLayout {
-            anchors {
-              fill: parent
-              margins: Style.marginL
-            }
+            anchors { fill: parent; margins: Style.marginL }
             spacing: Style.marginL
 
-            RowLayout {
-              NText {
-                text: Valent.mainDevice.name
-                pointSize: Style.fontSizeXXL
-                font.weight: Style.fontWeightBold
-                color: Color.mOnSurface
-                Layout.fillWidth: true
-              }
+            NText {
+              text: main.mainDevice?.name ?? ""
+              pointSize: Style.fontSizeXXL
+              font.weight: Style.fontWeightBold
+              color: Color.mOnSurface
+              Layout.fillWidth: true
             }
 
             Rectangle {
@@ -448,18 +346,16 @@ Item {
               color: "transparent"
 
               ColumnLayout {
-                anchors.fill: parent
-                anchors.margins: Style.marginM
+                anchors { fill: parent; margins: Style.marginM }
                 spacing: Style.marginM
 
                 NButton {
                   text: pluginApi?.tr("panel.pair")
                   Layout.alignment: Qt.AlignHCenter
-                  enabled: !Valent.mainDevice.pairRequested
+                  enabled: !(main.mainDevice?.isPairRequested ?? false)
                   onClicked: {
-                    Valent.requestPairing(Valent.mainDevice.id)
-                    Valent.mainDevice.pairRequested = true
-                    Valent.refreshDevices()
+                    main.requestPairing(main.mainDevice.id)
+                    main.refreshDevices()
                   }
                 }
 
@@ -472,24 +368,24 @@ Item {
                     pointSize: Style.fontSizeXL
                     color: Color.mOnSurface
                     Layout.alignment: Qt.AlignHCenter
-                    opacity: Valent.mainDevice.pairRequested ? 1.0 : 0.0
+                    opacity: (main.mainDevice?.isPairRequested ?? false) ? 1.0 : 0.0
                   }
 
                   NText {
-                    text: Valent.mainDevice.verificationKey
+                    text: main.mainDevice?.verificationKey ?? ""
                     Layout.alignment: Qt.AlignHCenter
                     pointSize: Style.fontSizeL
                     font.weight: Style.fontWeightBold
                     color: Color.mOnSurface
-                    opacity: Valent.mainDevice.pairRequested ? 1.0 : 0.0
+                    opacity: (main.mainDevice?.isPairRequested ?? false) ? 1.0 : 0.0
                   }
                 }
 
                 NBusyIndicator {
                   Layout.alignment: Qt.AlignHCenter
-                  opacity: Valent.mainDevice.pairRequested ? 1.0 : 0.0
+                  opacity: (main.mainDevice?.isPairRequested ?? false) ? 1.0 : 0.0
                   size: Style.baseWidgetSize * 0.5
-                  running: Valent.mainDevice.pairRequested
+                  running: main.mainDevice?.isPairRequested ?? false
                 }
               }
             }
@@ -497,229 +393,124 @@ Item {
         }
       }
 
+      // ── CARD: no devices ─────────────────────────────────────────────────────
       Component {
         id: noDevicesAvailableCard
 
         Rectangle {
-          Layout.fillWidth: true
-          Layout.fillHeight: true
           color: Color.mSurfaceVariant
           radius: Style.radiusM
 
           ColumnLayout {
-            id: emptyState
-            anchors.fill: parent
-            anchors.margins: Style.marginM
+            anchors { fill: parent; margins: Style.marginM }
             spacing: Style.marginM
 
-            Item {
-              Layout.fillHeight: true
-            }
-
+            Item { Layout.fillHeight: true }
             NIcon {
               icon: "device-mobile-off"
               pointSize: 48 * Style.uiScaleRatio
               color: Color.mOnSurfaceVariant
               Layout.alignment: Qt.AlignHCenter
             }
-
-            Item {}
-
             NText {
-              text: pluginApi?.tr("panel.valent-connect-error.no-devices") || "No connected devices found"
+              text: pluginApi?.tr("panel.kdeconnect-error.no-devices")
               pointSize: Style.fontSizeL
               color: Color.mOnSurfaceVariant
               Layout.alignment: Qt.AlignCenter
               horizontalAlignment: Text.AlignHCenter
-              verticalAlignment: Text.AlignVCenter
               wrapMode: Text.WordWrap
             }
-
-            Item {
-              Layout.fillHeight: true
-            }
+            Item { Layout.fillHeight: true }
           }
         }
       }
 
+      // ── CARD: device not reachable ───────────────────────────────────────────
       Component {
         id: deviceNotReachableCard
 
         Rectangle {
-          Layout.fillWidth: true
-          Layout.fillHeight: true
           color: Color.mSurfaceVariant
           radius: Style.radiusM
 
           ColumnLayout {
-            id: emptyState
-            anchors.fill: parent
-            anchors.margins: Style.marginM
+            anchors { fill: parent; margins: Style.marginM }
             spacing: Style.marginM
 
-            Item {
-              Layout.fillHeight: true
-            }
-
+            Item { Layout.fillHeight: true }
             NIcon {
               icon: "device-mobile-off"
               pointSize: 48 * Style.uiScaleRatio
               color: Color.mOnSurfaceVariant
               Layout.alignment: Qt.AlignHCenter
             }
-
-            Item {}
-
             NText {
-              text: pluginApi?.tr("panel.valent-connect-error.device-unavailable")
+              text: pluginApi?.tr("panel.kdeconnect-error.device-unavailable")
               pointSize: Style.fontSizeL
               color: Color.mOnSurfaceVariant
               Layout.alignment: Qt.AlignCenter
               horizontalAlignment: Text.AlignHCenter
-              verticalAlignment: Text.AlignVCenter
               wrapMode: Text.WordWrap
             }
-
-            Item {
-
-            }
-
             NButton {
               text: pluginApi?.tr("panel.unpair")
               Layout.alignment: Qt.AlignHCenter
-              onClicked: {
-                Valent.unpairDevice(Valent.mainDevice.id)
-              }
+              onClicked: main.unpairDevice(main.mainDevice.id)
             }
-
-            Item {
-              Layout.fillHeight: true
-            }
+            Item { Layout.fillHeight: true }
           }
         }
       }
 
-
+      // ── CARD: daemon not running ─────────────────────────────────────────────
       Component {
-        id: qdbusNotFoundCard
+        id: daemonNotRunningCard
 
         Rectangle {
-          Layout.fillWidth: true
-          Layout.fillHeight: true
           color: Color.mSurfaceVariant
           radius: Style.radiusM
 
           ColumnLayout {
-            id: emptyState
-            anchors.fill: parent
-            anchors.margins: Style.marginM
+            anchors { fill: parent; margins: Style.marginM }
             spacing: Style.marginM
 
-            Item {
-              Layout.fillHeight: true
-            }
-
+            Item { Layout.fillHeight: true }
             NIcon {
               icon: "exclamation-circle"
               pointSize: 48 * Style.uiScaleRatio
               color: Color.mOnSurfaceVariant
               Layout.alignment: Qt.AlignHCenter
             }
-
-            Item {}
-
             NText {
-              text: pluginApi?.tr("panel.qdbus-error.unavailable-title")
+              text: pluginApi?.tr("panel.kdeconnect-error.unavailable-title")
               pointSize: Style.fontSizeL
               color: Color.mOnSurfaceVariant
               Layout.alignment: Qt.AlignCenter
               horizontalAlignment: Text.AlignHCenter
-              verticalAlignment: Text.AlignVCenter
             }
-
             NText {
-              text: pluginApi?.tr("panel.qdbus-error.unavailable-desc")
+              text: pluginApi?.tr("panel.kdeconnect-error.unavailable-desc")
               pointSize: Style.fontSizeS
               color: Color.mOnSurfaceVariant
               Layout.alignment: Qt.AlignCenter
               horizontalAlignment: Text.AlignHCenter
-              verticalAlignment: Text.AlignVCenter
               wrapMode: Text.WordWrap
               Layout.fillWidth: true
             }
-
-            Item {
-              Layout.fillHeight: true
-            }
+            Item { Layout.fillHeight: true }
           }
         }
       }
 
-      Component {
-        id: valentDaemonNotRunningCard
-
-        Rectangle {
-          Layout.fillWidth: true
-          Layout.fillHeight: true
-          color: Color.mSurfaceVariant
-          radius: Style.radiusM
-
-          ColumnLayout {
-            id: emptyState
-            anchors.fill: parent
-            anchors.margins: Style.marginM
-            spacing: Style.marginM
-
-            Item {
-              Layout.fillHeight: true
-            }
-
-            NIcon {
-              icon: "exclamation-circle"
-              pointSize: 48 * Style.uiScaleRatio
-              color: Color.mOnSurfaceVariant
-              Layout.alignment: Qt.AlignHCenter
-            }
-
-            Item {}
-
-            NText {
-              text: pluginApi?.tr("panel.valent-connect-error.unavailable-title") || "Valent is not running"
-              pointSize: Style.fontSizeL
-              color: Color.mOnSurfaceVariant
-              Layout.alignment: Qt.AlignCenter
-              horizontalAlignment: Text.AlignHCenter
-              verticalAlignment: Text.AlignVCenter
-            }
-
-            NText {
-              text: pluginApi?.tr("panel.valent-connect-error.unavailable-desc") || "Please make sure the Valent application is installed and running."
-              pointSize: Style.fontSizeS
-              color: Color.mOnSurfaceVariant
-              Layout.alignment: Qt.AlignCenter
-              horizontalAlignment: Text.AlignHCenter
-              verticalAlignment: Text.AlignVCenter
-              wrapMode: Text.WordWrap
-              Layout.fillWidth: true
-            }
-
-            Item {
-              Layout.fillHeight: true
-            }
-          }
-        }
-      }
-
+      // ── CARD: device switcher ────────────────────────────────────────────────
       Component {
         id: deviceSwitcherCard
 
         Rectangle {
-          Layout.fillWidth: true
-          Layout.fillHeight: true
           color: Color.mSurfaceVariant
           radius: Style.radiusM
 
-          NScrollView{
+          NScrollView {
             horizontalPolicy: ScrollBar.AlwaysOff
             verticalPolicy: ScrollBar.AsNeeded
             contentWidth: parent.width
@@ -727,38 +518,37 @@ Item {
             gradientColor: Color.mSurface
 
             ColumnLayout {
-              id: emptyState
-              anchors.fill: parent
-              anchors.margins: Style.marginM
+              anchors { fill: parent; margins: Style.marginM }
               spacing: Style.marginM
 
               Repeater {
-                model: Valent.devices
+                model: main.devices ?? []
                 Layout.fillWidth: true
 
                 NButton {
                   required property var modelData
                   text: modelData.name
                   Layout.fillWidth: true
-                  backgroundColor: modelData.id === Valent.mainDevice.id ? Color.mSecondary : Color.mPrimary
-
+                  backgroundColor: modelData.id === (main.mainDevice?.id ?? "")
+                    ? Color.mSecondary
+                    : Color.mPrimary
                   onClicked: {
-                    Valent.setMainDevice(modelData.id);
-                    deviceSwitcherOpen = false;
-
-                    pluginApi.pluginSettings.mainDeviceId = modelData.id;
-                    pluginApi.saveSettings();
+                    main.setMainDevice(modelData.id)
+                    deviceSwitcherOpen = false
+                    if (pluginApi) {
+                      pluginApi.pluginSettings.mainDeviceId = modelData.id
+                      pluginApi.saveSettings()
+                    }
                   }
                 }
               }
 
-              Item {
-                Layout.fillHeight: true
-              }
+              Item { Layout.fillHeight: true }
             }
           }
         }
       }
+
     }
   }
 }

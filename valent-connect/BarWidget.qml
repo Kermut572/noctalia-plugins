@@ -1,29 +1,26 @@
 import QtQuick
-import QtQuick.Controls
 import Quickshell
 import qs.Commons
 import qs.Modules.Bar.Extras
 import qs.Modules.Panels.Settings
-import qs.Services.Hardware
 import qs.Services.UI
 import qs.Widgets
-import "./Services"
 
 Item {
   id: root
 
   property var pluginApi: null
-
   property ShellScreen screen
-
-  // Widget properties passed from Bar.qml for per-instance settings
   property string widgetId: ""
   property string section: ""
 
-  // Explicit screenName property ensures reactive binding when screen changes
   readonly property string screenName: screen ? screen.name : ""
+  property string iconColorKey: ""
+  property string textColorKey: ""
 
-  implicitWidth: pill.width
+  readonly property var main: pluginApi?.mainInstance ?? null
+
+  implicitWidth:  pill.width
   implicitHeight: pill.height
 
   visible: true
@@ -35,13 +32,18 @@ Item {
     oppositeDirection: BarService.getPillDirection(root)
     customIconColor: Color.resolveColorKeyOptional(root.iconColorKey)
     customTextColor: Color.resolveColorKeyOptional(root.textColorKey)
-    icon: ValentUtils.getConnectionStateIcon(Valent.mainDevice, Valent.daemonAvailable)
-    autoHide: false // Important to be false so we can hover as long as we want
-    text: !Valent.daemonAvailable || Valent.mainDevice === null || Valent.mainDevice.battery === -1 ? "" : (Valent.mainDevice.battery + "%")
+    icon: root.main?.getConnectionStateIcon(root.main?.mainDevice ?? null, root.main?.daemonAvailable ?? false) ?? "exclamation-circle"
+    autoHide: false
+    text: {
+      var m = root.main
+      if (!m || !m.daemonAvailable || !m.mainDevice) return ""
+      if (m.mainDevice.batteryCharge === -1) return ""
+      return m.mainDevice.batteryCharge + "%"
+    }
     tooltipText: pluginApi?.tr("bar.tooltip")
     onClicked: {
       if (pluginApi) {
-        pluginApi.openPanel(root.screen, this);
+        pluginApi.openPanel(root.screen, this)
       }
     }
   }

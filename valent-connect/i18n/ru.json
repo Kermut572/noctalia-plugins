@@ -21,10 +21,10 @@
     "find-device": "Найти моё устройство",
     "pair": "Сопрячь устройство",
     "unpair": "Разорвать сопряжение",
-    "valent-connect-error": {
-      "no-devices": "Устройства с Valent Connect не обнаружены",
-      "unavailable-title": "Похоже, Valent не запущен!",
-      "unavailable-desc": "Убедитесь, что Valent Connect установлен в системе и служба Valent работает.",
+    "kdeconnect-error": {
+      "no-devices": "Устройства с KDE Connect не обнаружены",
+      "unavailable-title": "Похоже, kdeconnectd не запущен!",
+      "unavailable-desc": "Убедитесь, что KDE Connect установлен в системе и служба kdeconnectd работает.",
        "device-unavailable": "Устройство сейчас недоступно"
     },
     "qdbus-error": {

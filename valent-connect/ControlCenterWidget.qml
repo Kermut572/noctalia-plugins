@@ -1,27 +1,30 @@
 import QtQuick
 import Quickshell
 import qs.Widgets
-import "./Services"
 
 NIconButtonHot {
-    property ShellScreen screen
-    property var pluginApi: null
+  property ShellScreen screen
+  property var pluginApi: null
 
-    function getTooltip(device) {
-        const batteryLabel = pluginApi?.tr("panel.card.battery") || "Battery";
-        const stateLabel = pluginApi?.tr("control_center.state-label") || "State";
+  readonly property var main: pluginApi?.mainInstance ?? null
 
-        const batteryLine = (device !== null && device.reachable && device.paired && device.battery !== -1) ? (batteryLabel + ": " + device.battery + "%\n") : "";
+  function getTooltip(device) {
+    var batteryLabel = pluginApi?.tr("panel.card.battery")
+    var stateLabel   = pluginApi?.tr("control_center.state-label")
 
-        const stateKey = ValentUtils.getConnectionStateKey(device, Valent.daemonAvailable);
-        const stateValue = pluginApi?.tr(stateKey) || "Unknown";
-        const stateLine = stateLabel + ": " + stateValue;
+    var batteryLine = (device !== null && device !== undefined && device.isReachable && device.isPaired && device.batteryCharge !== -1)
+      ? (batteryLabel + ": " + device.batteryCharge + "%\n")
+      : ""
 
-        return batteryLine + stateLine;
-    }
+    var stateKey   = main?.getConnectionStateKey(device, main?.daemonAvailable ?? false) ?? "control_center.state.unavailable"
+    var stateValue = pluginApi?.tr(stateKey)
+    var stateLine  = stateLabel + ": " + stateValue
 
-    icon: ValentUtils.getConnectionStateIcon(Valent.mainDevice, Valent.daemonAvailable)
-    tooltipText: getTooltip(Valent.mainDevice)
+    return batteryLine + stateLine
+  }
 
-    onClicked: pluginApi?.togglePanel(screen, this)
+  icon:        main?.getConnectionStateIcon(main?.mainDevice ?? null, main?.daemonAvailable ?? false) ?? "exclamation-circle"
+  tooltipText: getTooltip(main?.mainDevice ?? null)
+
+  onClicked: pluginApi?.togglePanel(screen, this)
 }
