@@ -85,11 +85,13 @@ Item {
   property real pendingSeekPosition: -1
 
   readonly property string helperPath: Qt.resolvedUrl("musicctl.sh").toString().replace("file://", "")
-  readonly property string statePath: Qt.resolvedUrl("cache/state.json").toString().replace("file://", "")
-  readonly property string libraryPath: Qt.resolvedUrl("cache/library.json").toString().replace("file://", "")
-  readonly property string settingsPath: Qt.resolvedUrl("cache/settings.json").toString().replace("file://", "")
-  readonly property string playlistsPath: Qt.resolvedUrl("cache/playlists.json").toString().replace("file://", "")
-  readonly property string queuePath: Qt.resolvedUrl("cache/queue.json").toString().replace("file://", "")
+  readonly property string cacheDir: Quickshell.env("MUSIC_CACHE_DIR")
+      || ((Quickshell.env("XDG_CACHE_HOME") || (Quickshell.env("HOME") + "/.cache")) + "/noctalia/plugins/music-search")
+  readonly property string statePath: root.cacheDir + "/state.json"
+  readonly property string libraryPath: root.cacheDir + "/library.json"
+  readonly property string settingsPath: root.cacheDir + "/settings.json"
+  readonly property string playlistsPath: root.cacheDir + "/playlists.json"
+  readonly property string queuePath: root.cacheDir + "/queue.json"
 
   Component.onCompleted: {
     refreshPreviewMetadataMode();
@@ -193,7 +195,7 @@ Item {
       }
 
       if (exitCode !== 0 && root.lastError === "") {
-        root.lastError = root.pluginApi?.tr("errors.playbackFailed") || "Music playback command failed.";
+        root.lastError = root.pluginApi?.tr("errors.playbackFailed") || "music-search playback command failed.";
       }
 
       root.refreshStatus();
@@ -230,7 +232,7 @@ Item {
         root.lastError = stderrText;
       } else if (exitCode !== 0 && root.lastError === "") {
         root.lastNotice = "";
-        root.lastError = root.pluginApi?.tr("errors.libraryFailed") || "Music library command failed.";
+        root.lastError = root.pluginApi?.tr("errors.libraryFailed") || "music-search library command failed.";
       }
     }
   }

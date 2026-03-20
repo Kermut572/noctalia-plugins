@@ -2,7 +2,7 @@
 # config.sh — constants, directory setup, and helpers
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
-CACHE_DIR="${MUSIC_CACHE_DIR:-${SCRIPT_DIR}/cache}"
+CACHE_DIR="${MUSIC_CACHE_DIR:-${XDG_CACHE_HOME:-${HOME}/.cache}/noctalia/plugins/music-search}"
 PID_FILE="${CACHE_DIR}/mpv.pid"
 STATE_FILE="${CACHE_DIR}/state.json"
 LIBRARY_FILE="${CACHE_DIR}/library.json"

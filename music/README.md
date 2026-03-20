@@ -40,8 +40,10 @@ qs -c noctalia-shell ipc call plugin:music stop
 
 ## Data files
 
-- `cache/library.json` stores saved tracks and playback stats
-- `cache/playlists.json` stores playlists
-- `cache/queue.json` stores the built-in persistent queue
-- `cache/state.json` stores current playback state
-- `settings.json` is local user state and should not be committed
+- By default, runtime data lives under `~/.cache/noctalia/plugins/music-search/`
+- `~/.cache/noctalia/plugins/music-search/library.json` stores saved tracks and playback stats
+- `~/.cache/noctalia/plugins/music-search/playlists.json` stores playlists
+- `~/.cache/noctalia/plugins/music-search/queue.json` stores the built-in persistent queue
+- `~/.cache/noctalia/plugins/music-search/state.json` stores current playback state
+- `~/.cache/noctalia/plugins/music-search/settings.json` stores local user state
+- Set `MUSIC_CACHE_DIR` to override the default cache directory

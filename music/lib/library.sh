@@ -92,7 +92,7 @@ _play_track_state_phase() {
         --demuxer-max-bytes=256K
         --log-file="$LOG_FILE"
         --input-ipc-server="$SOCKET_FILE"
-        --title="Noctalia Music"
+        --title="Noctalia music-search"
         "$playback_source"
       )
 
@@ -140,7 +140,7 @@ _play_track_state_phase() {
       --demuxer-max-bytes=256K
       --log-file="$LOG_FILE"
       --input-ipc-server="$SOCKET_FILE"
-      --title="Noctalia Music"
+      --title="Noctalia music-search"
       "$url"
     )
 

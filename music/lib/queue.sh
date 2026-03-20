@@ -91,7 +91,7 @@ _queue_load_library_unlocked() {
   fi
 
   if [[ ! -f "$library_file" ]]; then
-    die "Music library file not found."
+    die "music-search library file not found."
   fi
 
   local lines_file

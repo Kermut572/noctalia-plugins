@@ -159,7 +159,7 @@ Item {
     return [
           {
             "name": commandName,
-            "description": pluginApi?.tr("command.description", {"provider": mainInstance?.providerLabel() || "YouTube"}) || ("Search music (" + (mainInstance?.providerLabel() || "YouTube") + "), play audio, and save favorites."),
+            "description": pluginApi?.tr("command.description", {"provider": mainInstance?.providerLabel() || "YouTube"}) || ("Search with music-search (" + (mainInstance?.providerLabel() || "YouTube") + "), play audio, and save favorites."),
             "icon": "music",
             "isTablerIcon": true,
             "isImage": false,
@@ -1608,7 +1608,7 @@ Item {
 
   function buildIdleStopItem() {
     return {
-      "name": pluginApi?.tr("actions.alreadyStopped") || "Music already stopped",
+      "name": pluginApi?.tr("actions.alreadyStopped") || "music-search is already stopped",
       "description": pluginApi?.tr("actions.nothingPlaying") || "Nothing is currently playing.",
       "icon": "player-stop",
       "isTablerIcon": true,
@@ -1645,7 +1645,7 @@ Item {
 
   function buildSearchHintItem(message) {
     return {
-      "name": pluginApi?.tr("search.title") || "Search music",
+      "name": pluginApi?.tr("search.title") || "Search with music-search",
       "description": message || pluginApi?.tr("search.hint") || "Try `>music-search burial`, `yt: burial`, `sc: artist`, `local: song`, `queue`, `#night`, `artist:name`, `rating:>=4`, `provider:local`, `playlist:name`, `speed:1.05`, or paste a URL.",
       "icon": "search",
       "isTablerIcon": true,
