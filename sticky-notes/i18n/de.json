@@ -15,20 +15,47 @@
     "new": "Neue Notiz",
     "empty": "Noch keine Notizen",
     "create-first": "Klicke auf + um deine erste Notiz zu erstellen",
+    "hint-unselect": "ESC zum Abwählen",
+    "hint-click-select": "Zum Auswählen anklicken",
     "delete-confirm": "Diese Notiz löschen?",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "close": "Schließen",
+    "window-title": "Sticky Note",
+    "mode-preview": "Vorschau",
+    "mode-edit": "Bearbeiten",
+    "switch-preview": "Vorschau",
+    "switch-edit": "Bearbeiten"
   },
   "editor": {
     "back": "Zurück zur Liste",
     "save": "Speichern",
     "delete": "Löschen",
     "placeholder": "Fang an, in Markdown zu schreiben...",
-    "hint": "Ctrl+Enter Speichern · Esc Abbrechen"
+    "hint": "Ctrl+S zum Speichern",
+    "hint-esc-save": "ESC zum Speichern"
   },
   "settings": {
-    "notesDir": {
-      "label": "Verzeichnis der Notizen",
-      "desc": "Pfad zu dem Ordner, in dem die Notizen gespeichert sind."
+    "saved": "Sticky Notes Einstellungen gespeichert",
+    "syncNow": "Jetzt synchronisieren",
+    "syncEnabled": {
+      "label": "GitHub-Gist Synchronisierung aktivieren",
+      "desc": "Notizen nach Änderungen automatisch mit einem privaten Gist synchronisieren."
+    },
+    "githubToken": {
+      "label": "GitHub Token",
+      "desc": "Persönlicher Zugriffstoken mit Gist Berechtigung",
+      "placeholder": "ghp_xxx",
+      "help": "Das Plugin erstellt oder nutzt einen privaten Gist namens `noctalia-sticky-notes`. Jede Notiz wird als einzelne Datei gespeichert, deren Dateiname der Notiz-ID entspricht."
+    }
+  },
+  "sync": {
+    "syncing": "Notizen mit GitHub Gist synchronisieren...",
+    "success": {
+      "created": "Gist erstellt und Notizen synchronisiert.",
+      "updated": "Notizen mit GitHub Gist synchronisiert."
+    },
+    "errors": {
+      "missing-token": "Vor der Synchronisierung ist ein GitHub-Token erforderlich."
     }
   }
 }
