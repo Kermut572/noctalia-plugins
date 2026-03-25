@@ -10,7 +10,6 @@ A Noctalia plugin to manage MIME default applications from a panel UI.
 
 - Scans installed `.desktop` files for their `MimeType=` entries.
 - Lists MIME types and candidate handlers.
-- Prioritizes MIME types that have multiple handlers (configurable in settings).
 - Updates `~/.config/mimeapps.list` in the `[Default Applications]` section.
 
 ## Notes
@@ -26,7 +25,6 @@ This plugin exposes an IPC target so the panel can be opened from keybinds, scri
 ```txt
 target plugin:mimeapp-gui
 	function open(): void
-	function toggle(): void
 ```
 
 Example commands:
