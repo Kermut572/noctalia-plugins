@@ -29,6 +29,7 @@ Item {
     readonly property bool isVertical: expandDirection === "up" || expandDirection === "down"
 
     // Primary button settings
+    readonly property bool showDrawer: cfg.drawer ?? defaults.drawer
     readonly property bool priShowPill: cfg.primaryShowPill ?? defaults.primaryShowPill
     readonly property string priSymbolColor: cfg.primarySymbolColor ?? defaults.primarySymbolColor
     readonly property string priPillColor: cfg.primaryPillColor ?? defaults.primaryPillColor
@@ -132,9 +133,16 @@ Item {
 
     // --- Sizing ---
 
-    readonly property int totalSecPills: expanded ? configuredWorkspaces.length : 0
+    readonly property int totalSecPills: (expanded || !showDrawer) ? configuredWorkspaces.length : 0
 
-    readonly property real fullSize: mainPillSize + (totalSecPills > 0 ? pillSpacing + secPillSize * totalSecPills + pillSpacing * Math.max(0, totalSecPills - 1) : 0)
+    readonly property real fullSize: {
+      const pillsSize = totalSecPills > 0
+          ? secPillSize * totalSecPills + pillSpacing * Math.max(0, totalSecPills - 1)
+          : 0;
+      return showDrawer
+          ? mainPillSize + (totalSecPills > 0 ? pillSpacing + pillsSize : 0)
+          : pillsSize;
+    }
 
     implicitWidth: isVertical ? capsuleHeight : fullSize
     implicitHeight: isVertical ? fullSize : capsuleHeight
@@ -154,6 +162,7 @@ Item {
         implicitWidth: root.mainPillSize
         implicitHeight: root.mainPillSize
         radius: root.mainPillSize / 2 * root.borderRadius
+        visible: root.showDrawer
         color: {
             if (mainBtnMouse.containsMouse) return root.priShowPill ? Color.mHover : Color.mTertiary;
             if (!root.priShowPill) return "transparent";
@@ -282,7 +291,7 @@ Item {
         MainButton { Layout.alignment: Qt.AlignVCenter }
         Repeater {
             model: root.configuredWorkspaces
-            WorkspacePill { visible: root.expanded; Layout.alignment: Qt.AlignVCenter }
+            WorkspacePill { visible: !root.showDrawer || root.expanded; Layout.alignment: Qt.AlignVCenter }
         }
     }
 
@@ -293,12 +302,12 @@ Item {
 
         Repeater {
             model: root.configuredWorkspaces
-            WorkspacePill { visible: root.expanded && root.expandDirection === "up"; Layout.alignment: Qt.AlignHCenter }
+            WorkspacePill { visible: (!root.showDrawer || root.expanded) && root.expandDirection === "up"; Layout.alignment: Qt.AlignHCenter }
         }
         MainButton { Layout.alignment: Qt.AlignHCenter }
         Repeater {
             model: root.configuredWorkspaces
-            WorkspacePill { visible: root.expanded && root.expandDirection === "down"; Layout.alignment: Qt.AlignHCenter }
+            WorkspacePill { visible: (!root.showDrawer || root.expanded) && root.expandDirection === "down"; Layout.alignment: Qt.AlignHCenter }
         }
     }
 }
