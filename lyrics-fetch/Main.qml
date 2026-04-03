@@ -166,10 +166,10 @@ Item {
         command: ["playerctl", "position"]
         running: false
 
-        stdout: StdioCollector {
-            onStreamFinished: {
+        stdout: SplitParser {
+            onRead: data => {
                 const pos = root.currentPosition
-                root.currentPosition = parseFloat(this.text)
+                root.currentPosition = parseFloat(data)
                 // Logger.d("songPositionProc", "old:", pos)
                 // Logger.d("songPositionProc", "new:", root.currentPosition)
                 // Logger.d("songPositionProc", "loading:", root.isLoading)
