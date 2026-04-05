@@ -32,7 +32,7 @@ Item {
 
     readonly property string displayText: {
         if (!displayHost) return "—"
-        if (displayHost.timedOut) return displayHost.name
+        if (displayHost.timedOut) return displayHost?.name
         const a = displayHost.avg10m >= 0 ? displayHost.avg10m
                 : displayHost.lastRtt >= 0 ? displayHost.lastRtt : -1
         if (a < 0) return showHostName ? displayHost.name : "..."
@@ -62,6 +62,7 @@ Item {
 
     readonly property string tooltipText: {
         if (hosts.length === 0) return pluginApi?.tr("widget.tooltip.noData")
+        if (!showHostName) return displayHost?.name
         return hosts.map(h => {
             const a = h.avg10m >= 0 ? Math.round(h.avg10m) + "ms"
                     : h.timedOut    ? pluginApi?.tr("widget.timedOut")
