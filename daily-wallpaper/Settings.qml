@@ -70,21 +70,6 @@ ColumnLayout {
         pluginApi.pluginSettings.locale = root.localeText;
         pluginApi.saveSettings();
 
-        refreshWallpaper.exec({
-            command: [
-                "qs",
-                "-c",
-                "noctalia-shell",
-                "ipc",
-                "call",
-                "plugin:daily-wallpaper",
-                "refresh"
-            ]
-        });
-    }
-
-    Process {
-        id: refreshWallpaper
-        running: false
+        pluginApi.mainInstance?.checkAndFetchWallpaper();
     }
 }
