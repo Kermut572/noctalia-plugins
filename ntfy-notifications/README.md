@@ -6,15 +6,15 @@ Receive push notifications from [ntfy](https://ntfy.sh) directly in your Noctali
 
 ## Features
 
-- **Bar Widget** — Bell icon with unread message badge and pulse animation
-- **Panel** — Scrollable notification list with topic badges, priority indicators, timestamps, and tags
-- **Desktop Toasts** — Native Noctalia toast notifications on new messages
-- **Read Status** — Mark messages individually or all at once as read (persists across restarts)
-- **Authentication** — Supports public topics, Access Token, and Basic Auth (username/password)
-- **Custom Server** — Use ntfy.sh or any self-hosted ntfy instance
-- **Multiple Topics** — Subscribe to multiple topics at once (comma-separated)
-- **Theming** — Fully themed using Noctalia's N* widgets, works with light and dark themes
-- **IPC** — Refresh via CLI: `qs ipc call plugin:ntfy-notifications refresh`
+- **Bar Widget:** Bell icon with unread message badge and pulse animation
+- **Panel:** Scrollable notification list with topic badges, priority indicators, timestamps, and tags
+- **Desktop Toasts:** Native Noctalia toast notifications on new messages
+- **Read Status:** Mark messages individually or all at once as read (persists across restarts)
+- **Authentication:** Supports public topics, Access Token, and Basic Auth (username/password)
+- **Custom Server:** Use ntfy.sh or any self-hosted ntfy instance
+- **Multiple Topics:** Subscribe to multiple topics at once (comma-separated)
+- **Theming:** Fully themed using Noctalia's N* widgets, works with light and dark themes
+- **IPC:** Refresh via CLI: `qs ipc call plugin:ntfy-notifications refresh`
 
 ## Installation
 
