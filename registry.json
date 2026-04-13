@@ -715,6 +715,23 @@
       "lastUpdated": "2026-03-29T19:05:12-04:00"
     },
     {
+      "id": "monique",
+      "name": "Monique",
+      "version": "1.0.0",
+      "official": false,
+      "author": "ToRvaLDz",
+      "description": "Switch monitor profiles from the bar. Shows the active profile and lets you switch between saved configurations.",
+      "repository": "https://github.com/noctalia-dev/noctalia-plugins",
+      "minNoctaliaVersion": "4.0.0",
+      "license": "MIT",
+      "tags": [
+        "Bar",
+        "System",
+        "Panel"
+      ],
+      "lastUpdated": "2026-04-08T15:33:46+02:00"
+    },
+    {
       "id": "mpd",
       "name": "MPD",
       "version": "1.1.1",
