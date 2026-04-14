@@ -1158,7 +1158,7 @@
     {
       "id": "privacy-indicator",
       "name": "Privacy Indicator",
-      "version": "1.2.8",
+      "version": "1.2.9",
       "official": true,
       "author": "Noctalia Team",
       "description": "A privacy indicator widget that shows when microphone, camera or screen sharing is active.",
@@ -1170,7 +1170,7 @@
         "Privacy",
         "Indicator"
       ],
-      "lastUpdated": "2026-04-08T21:53:19+02:00"
+      "lastUpdated": "2026-04-11T00:29:44+02:00"
     },
     {
       "id": "ramadan-iftar",
